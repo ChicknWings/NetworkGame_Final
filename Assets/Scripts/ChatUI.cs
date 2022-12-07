@@ -30,6 +30,12 @@ public class ChatUI : NetworkBehaviour {
         }
     }
 
+    public override void OnDestroy()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback -= HostOnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= HostOnClientDisconnected;
+    }
+
     private void SendUIMessage() {
         string msg = inputMessage.text;
         inputMessage.text = "";
@@ -52,6 +58,12 @@ public class ChatUI : NetworkBehaviour {
 
             singleClientId[0] = to;
             SendChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+        }
+    }
+
+    public void SendSystemMessage(string msg) {
+        if (IsHost) {
+            SendChatMessageClientRpc(msg, SYSTEM_ID);
         }
     }
 
